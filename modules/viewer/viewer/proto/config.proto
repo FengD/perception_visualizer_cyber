@@ -1,0 +1,149 @@
+syntax = "proto2";
+
+package crdc.airi.viewer;
+
+message Color {
+  optional float r = 1;
+  optional float g = 2;
+  optional float b = 3;
+  optional float a = 4;
+}
+
+message TexturemapInfo {
+  optional string name = 1;
+  optional string path = 2;
+  optional float offset_x = 3;
+  optional float offset_y = 4;
+  optional float resolution = 5;
+}
+
+message Config {
+  // Common Settings
+  optional Color background_color = 1;
+  optional Color default_color = 2;
+  optional float default_point_size = 3;
+  optional float default_line_width = 4;
+  optional string path_font_normal = 5;
+  optional string path_font_bold = 6;
+
+  // ContextRenderer
+  optional bool context_renderer_enable = 101;
+  optional bool context_grid_enable = 102;
+  optional float context_grid_range = 103;
+  optional float context_grid_size = 104;
+  optional float context_grid_line_width = 105;
+  optional Color context_grid_color = 106;
+
+  // FrameRenderer
+  optional bool frame_renderer_enable = 201;
+  optional float frame_line_length = 202;
+  optional float frame_line_width = 203;
+  optional int32 frame_font_size = 204;
+  optional bool frame_font_bold = 205;
+  repeated string frame_renderer_frames = 206;
+
+  // HDMapRenderer
+  optional bool hdmap_renderer_enable = 301;
+  optional bool hdmap_road_enable = 302;
+  optional Color hdmap_road_color = 303;
+  optional bool hdmap_lane_center_line_enable = 304;
+  optional Color hdmap_lane_center_line_color = 305;
+  optional bool hdmap_lane_divider_enable = 335;
+  optional bool hdmap_junction_enable = 306;
+  optional Color hdmap_junction_color = 307;
+  optional bool hdmap_crosswalk_enable = 308;
+  optional Color hdmap_crosswalk_color = 309;
+  optional bool hdmap_parking_area_enable = 314;
+  optional Color hdmap_parking_area_color = 315;
+  optional bool hdmap_road_block_area_enable = 326;
+  optional Color hdmap_road_block_area_color = 327;
+  optional bool hdmap_slope_area_enable = 328;
+  optional Color hdmap_slope_area_color = 329;
+  optional bool hdmap_side_area_enable = 318;
+  optional Color hdmap_side_area_color = 319;
+  optional bool hdmap_walk_way_enable = 320;
+  optional Color hdmap_walk_way_color = 321;
+  optional bool hdmap_square_enable = 322;
+  optional Color hdmap_square_color = 323;
+  optional bool hdmap_green_belt_enable = 324;
+  optional Color hdmap_green_belt_color = 325;
+  optional bool hdmap_speed_bump_enable = 330;
+  optional Color hdmap_speed_bump_color = 331;
+  optional bool hdmap_side_line_enable = 332;
+  optional Color hdmap_side_line_color = 333;
+  optional float hdmap_side_line_width = 334;
+
+  // TexturemapRenderer
+  optional bool texturemap_renderer_enable = 401;
+  repeated TexturemapInfo texturemaps = 402;
+
+  // LocalizationRenderer
+  optional bool localization_renderer_enable = 451;
+  optional bool localization_trail_enable = 452;
+  optional float localization_trail_width = 453;
+  optional Color localization_trail_color = 454;
+  optional int32 localization_trail_capacity = 455;
+
+  // PredictionRenderer
+  optional bool prediction_renderer_enable = 501;
+  optional Color prediction_path_color = 502;
+  optional bool prediction_probability_enable = 503;
+  optional bool prediction_intent_enable = 504;
+  optional bool prediction_most_probably_enable = 505;
+
+  // RoutingRenderer
+  optional bool routing_renderer_enable = 1301;
+  optional bool routing_request_enable = 1305;
+  optional float routing_request_size = 1306;
+  optional Color routing_request_color = 1307;
+  optional bool routing_response_enable = 1302;
+  optional float routing_response_width = 1303;
+  optional Color routing_response_color = 1304;
+
+  // PlanningRenderer
+  optional bool planning_renderer_enable = 601;
+  optional bool planning_reference_line_enable = 602;
+  optional float planning_reference_line_width = 603;
+  optional Color planning_reference_line_color = 604;
+  optional bool planning_path_enable = 611;
+  optional float planning_path_width = 612;
+  optional Color planning_path_color = 613;
+  optional bool planning_stopline_enable = 621;
+  optional Color planning_stopline_color = 622;
+  optional float planning_stopline_width = 623;
+  optional float planning_stopline_height = 624;
+  optional bool planning_trajectory_enable = 631;
+  optional float planning_trajectory_width = 632;
+  optional Color planning_trajectory_color = 633;
+
+  // PointCloudRenderer
+  optional bool pointcloud_renderer_enable = 701;
+  map<string, bool> pointcloud_channel_enable = 702;
+
+  // PointCloudsRenderer
+  optional bool pointclouds_renderer_enable = 801;
+  map<string, bool> pointclouds_channel_enable = 802;
+
+  // PerceptionRenderer
+  optional bool perception_renderer_enable = 901;
+  map<string, bool> perception_channel_enable = 961;
+  optional float perception_line_width = 902;
+  optional Color perception_color_vehicle = 903;
+  optional Color perception_color_cyclist = 904;
+  optional Color perception_color_pedestrian = 905;
+  optional Color perception_color_unknown_movable = 906;
+  optional Color perception_color_unknown_unmovable = 907;
+  optional Color perception_color_traffic_cone = 951;
+  optional Color perception_color_fence = 952;
+
+  // ModelRenderer
+  optional bool model_renderer_enable = 1001;
+  optional string model_path = 1002;
+
+  // MarkerRenderer
+  optional bool marker_renderer_enable = 1101;
+  map<string, bool> marker_channel_enable = 1102;
+
+  // HudRenderer
+  optional bool hud_renderer_enable = 1201;
+}
