@@ -79,7 +79,7 @@ The buttons from left to right are:
 ![](./images/frame.png)
 
 * Subscribed Topics settings
-![](./images/topisc.png)
+![](./images/topics.png)
 
 * Demo example:
 ![](./images/demo.png)
