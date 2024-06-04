@@ -3,24 +3,15 @@
 #include <QPainter>
 #include <QTimer>
 #include <QWheelEvent>
-#include "cyber/common/log.h"
 #include "viewer/camera.h"
 #include "viewer/global_data.h"
 #include "viewer/renderers/view_renderer.h"
 #include "viewer/renderers/context_renderer.h"
 #include "viewer/renderers/frame_renderer.h"
-// #include "viewer/renderers/hdmap_renderer.h"
-// #include "viewer/renderers/hud_renderer.h"
 #include "viewer/renderers/marker_renderer.h"
-// #include "viewer/renderers/model_renderer.h"
 #include "viewer/renderers/perception_renderer.h"
-// #include "viewer/renderers/localization_renderer.h"
-// #include "viewer/renderers/routing_renderer.h"
-// #include "viewer/renderers/planning_renderer.h"
 #include "viewer/renderers/pointcloud_renderer.h"
 #include "viewer/renderers/pointclouds_renderer.h"
-// #include "viewer/renderers/prediction_renderer.h"
-#include "viewer/renderers/texturemap_renderer.h"
 #ifdef __aarch64__
 #include <QOpenGLShaderProgram>
 #include <QCoreApplication>
@@ -47,7 +38,7 @@ static const char *fragmentShaderSource =
 #endif
 
 GLWidget::GLWidget() {
-  global_data_ = Singleton<GlobalData>::get();
+  global_data_ = crdc::airi::common::Singleton<GlobalData>::get();
   global_data_->camera_.reset(new Camera());
 }
 
@@ -73,36 +64,20 @@ void GLWidget::initializeGL() {
   // order of construction influences order in renderer manager
   auto view_renderer = std::make_shared<ViewRenderer>();
   auto context_renderer = std::make_shared<ContextRenderer>();
-  // auto model_renderer = std::make_shared<ModelRenderer>();
   auto frame_renderer = std::make_shared<FrameRenderer>();
-  // auto hdmap_renderer = std::make_shared<HDMapRenderer>();
-  auto texturemap_renderer = std::make_shared<TexturemapRenderer>();
   auto pointcloud_renderer = std::make_shared<PointCloudRenderer>();
   auto pointclouds_renderer = std::make_shared<PointCloudsRenderer>();
-  // auto localization_renderer = std::make_shared<LocalizationRenderer>();
   auto perception_renderer = std::make_shared<PerceptionRenderer>();
-  // auto prediction_renderer = std::make_shared<PredictionRenderer>();
-  // auto routing_renderer = std::make_shared<RoutingRenderer>();
-  // auto planning_renderer = std::make_shared<PlanningRenderer>();
   auto marker_renderer = std::make_shared<MarkerRenderer>();
-  // auto hud_renderer = std::make_shared<HudRenderer>();
 
   // order in renderers_ decides order of rendering
   renderers_.push_back(view_renderer);
   renderers_.push_back(context_renderer);
-  // renderers_.push_back(hdmap_renderer);
-  renderers_.push_back(texturemap_renderer);
-  // renderers_.push_back(localization_renderer);
-  // renderers_.push_back(routing_renderer);
-  // renderers_.push_back(prediction_renderer);
-  // renderers_.push_back(planning_renderer);
   renderers_.push_back(pointcloud_renderer);
   renderers_.push_back(pointclouds_renderer);
   renderers_.push_back(perception_renderer);
   renderers_.push_back(frame_renderer);
-  // renderers_.push_back(model_renderer);
   renderers_.push_back(marker_renderer);
-  // renderers_.push_back(hud_renderer);
 
 #ifdef __aarch64__
   m_program = new QOpenGLShaderProgram;
@@ -116,23 +91,8 @@ void GLWidget::initializeGL() {
   m_mvMatrixLoc = m_program->uniformLocation("mvMatrix");
   m_color = m_program->uniformLocation("color");
 
-  // Setup our vertex buffer object.
-  //m_logoVbo.create();
-  //m_logoVbo.bind();
-  //m_logoVbo.allocate(m_logo.constData(), m_logo.count() * sizeof(GLfloat));
-
-
-  //m_logoVbo.bind();
-  //QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-  //f->glEnableVertexAttribArray(0);
-  //f->glEnableVertexAttribArray(1);
-  //f->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
-  //f->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void *>(3 * sizeof(GLfloat)));
-  //m_logoVbo.release();
-
   m_program->setUniformValue(m_color, QVector4D(0.8, 0.8, 0.8, 1.0));
 
-  //m_program->release();
 #endif
 
   for (auto &renderer : renderers_) {

@@ -133,6 +133,12 @@ message Config {
   optional Color perception_color_pedestrian = 905;
   optional Color perception_color_unknown_movable = 906;
   optional Color perception_color_unknown_unmovable = 907;
+  optional Color perception_color_bus = 909;
+  optional Color perception_color_child = 910;
+  optional Color perception_color_motor_cycle = 911;
+  optional Color perception_color_tricycle = 912;
+  optional Color perception_color_trailer = 913;
+  optional Color perception_color_truck = 914;
   optional Color perception_color_traffic_cone = 951;
   optional Color perception_color_fence = 952;
 

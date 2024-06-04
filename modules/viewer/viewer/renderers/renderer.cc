@@ -2,7 +2,6 @@
 #include <FTGL/ftgl.h>
 #include <GL/freeglut.h>
 #include <GL/glut.h>
-#include "cyber/common/log.h"
 #include "viewer/global_data.h"
 #include "viewer/camera.h"
 #include "viewer/renderers/ear_cut.h"
@@ -10,7 +9,7 @@
 namespace crdc {
 namespace airi {
 
-Renderer::Renderer() { global_data_ = Singleton<GlobalData>::get(); }
+Renderer::Renderer() { global_data_ = crdc::airi::common::Singleton<GlobalData>::get(); }
 
 #ifdef __aarch64__
 void copy(Eigen::MatrixXf &a, Eigen::MatrixXf &b, int i, int j) {

@@ -10,6 +10,7 @@
 #include "viewer/renderer_manager.h"
 #include "viewer/widgets/push_button.h"
 #include "viewer/widgets/toggle_button.h"
+#include "common/common.h"
 #include <Eigen/Eigen>
 
 namespace crdc {
@@ -21,14 +22,14 @@ Toolbar::Toolbar() {
   const QSize icon_size(height * 2 / 3, height * 2 / 3);
   this->setMaximumHeight(height);
 
-  auto global_data = Singleton<GlobalData>::get();
+  auto global_data = crdc::airi::common::Singleton<GlobalData>::get();
 
   // button: info
   auto bt_info = new PushButton(QIcon(std::getenv("CRDC_WS") + QString("/icons/info.png")), [=]() {
     auto info = new Info();
     info->show();
   });
-  bt_info->setToolTip("Information");
+  bt_info->setToolTip("Tips");
   bt_info->setMaximumHeight(height);
   bt_info->setFixedWidth(height);
   bt_info->setIconSize(icon_size);
@@ -48,42 +49,28 @@ Toolbar::Toolbar() {
   bt_locate->setFixedWidth(height);
   bt_locate->setIconSize(icon_size);
 
-  // button: follow
-  auto bt_follow = new ToggleButton(
-      QIcon(std::getenv("CRDC_WS") + QString("/icons/camera.png")), false, [=](bool is_checked) {
-        if (is_checked) {
-          pose_prev_ = global_data->pose();
-
-          global_data->camera_->setCameraControlCallback([=]() {
-            auto pose = global_data->pose();
-            const auto &pos_prev = pose_prev_->pose().position();
-            const auto &ori_prev = pose_prev_->pose().orientation();
-            const auto &pos = pose->pose().position();
-            const auto &ori = pose->pose().orientation();
-            global_data->camera_->rotateAndTranslate(
-                glm::dvec3(pos_prev.x(), pos_prev.y(), 0), glm::dvec3(pos.x(), pos.y(), 0),
-                glm::dquat(ori_prev.qw(), ori_prev.qx(), ori_prev.qy(), ori_prev.qz()),
-                glm::dquat(ori.qw(), ori.qx(), ori.qy(), ori.qz()));
-            pose_prev_ = pose;
-          });
-        } else {
-          global_data->camera_->setCameraControlCallback([] {});
-        }
-      });
-  bt_follow->click();
-  bt_follow->setToolTip("Camera Follow");
-  bt_follow->setMaximumHeight(height);
-  bt_follow->setFixedWidth(height);
-  bt_follow->setIconSize(icon_size);
-
   // button: image player
-  auto bt_image_player = new ToggleButton(
-      QIcon(std::getenv("CRDC_WS") + QString("/icons/video.png")), false,
-      [=](bool is_checked) { global_data->image_player_->setHidden(!is_checked); });
-  bt_image_player->setToolTip("Image Player");
-  bt_image_player->setMaximumHeight(height);
-  bt_image_player->setFixedWidth(height);
-  bt_image_player->setIconSize(icon_size);
+  auto bt_image_player_add = new PushButton(QIcon(std::getenv("CRDC_WS") + QString("/icons/add.png")), [=]() {
+    global_data->image_players_[global_data->ip_counter_]->setHidden(false);
+    if (global_data->ip_counter_ < global_data->image_players_.size() - 1) {
+      global_data->ip_counter_++;
+    }
+  });
+  bt_image_player_add->setToolTip("Add Camera");
+  bt_image_player_add->setMaximumHeight(height);
+  bt_image_player_add->setFixedWidth(height);
+  bt_image_player_add->setIconSize(icon_size);
+
+  auto bt_image_player_del = new PushButton(QIcon(std::getenv("CRDC_WS") + QString("/icons/delete.png")), [=]() {
+    global_data->image_players_[global_data->ip_counter_]->setHidden(true);
+    if (global_data->ip_counter_ > 0) {
+      global_data->ip_counter_--;
+    }
+  });
+  bt_image_player_del->setToolTip("Remove Camera");
+  bt_image_player_del->setMaximumHeight(height);
+  bt_image_player_del->setFixedWidth(height);
+  bt_image_player_del->setIconSize(icon_size);
 
   // button: measure
   global_data->bt_measure_ = new ToggleButton(QIcon(std::getenv("CRDC_WS") + QString("/icons/ruler.png")), false,
@@ -93,14 +80,24 @@ Toolbar::Toolbar() {
   global_data->bt_measure_->setMaximumHeight(height);
   global_data->bt_measure_->setIconSize(icon_size);
 
+  // button: data mining
+  auto data_mining_ =
+      new PushButton(QIcon(std::getenv("CRDC_WS") + QString("/icons/export.png")), [=]() {
+        global_data->is_mining_ = true;
+      });
+  data_mining_->setToolTip("Data Mining");
+  data_mining_->setText("Data Mining");
+  data_mining_->setMaximumHeight(height);
+  data_mining_->setIconSize(icon_size);
+
   // button: screenshot
   auto bt_screenshot =
       new PushButton(QIcon(std::getenv("CRDC_WS") + QString("/icons/screenshot.png")), [=]() {
         auto qimg = global_data->glwidget_->grabFrameBuffer();
         cv::Mat img(qimg.height(), qimg.width(), CV_8UC4, qimg.bits());
         cv::cvtColor(img, img, CV_BGRA2BGR);
-        const auto path = std::getenv("CRDC_WS") + std::string("/daydream_screenshot_") +
-                          std::to_string(apollo::cyber::Time::Now().ToNanosecond() / 1000) + ".png";
+        const auto path = std::string("./viewer_screenshot_") +
+                          std::to_string(get_now_microsecond() / 1000) + ".png";
         cv::imwrite(path, img);
       });
   bt_screenshot->setToolTip("Screenshot");
@@ -123,10 +120,11 @@ Toolbar::Toolbar() {
   auto bt_record = new ToggleButton(
       QIcon(std::getenv("CRDC_WS") + QString("/icons/record.png")), false, [=](bool is_checked) {
         if (is_checked && !vw.isOpened()) {
-          const auto path = std::getenv("CRDC_WS") + std::string("/daydream_record_") +
-                            std::to_string(apollo::cyber::Time::Now().ToNanosecond() / 1000) +
+          const auto path = std::string("./viewer_record_") +
+                            std::to_string(get_now_microsecond() / 1000) +
                             ".avi";
-          vw.open(path, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 15.0,
+          // set a lower fps for more clear visualization 
+          vw.open(path, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 5.0,
                   cv::Size(global_data->glwidget_->width(), global_data->glwidget_->height()),
                   true);
           timer.start(66);
@@ -139,15 +137,6 @@ Toolbar::Toolbar() {
   bt_record->setMaximumHeight(height);
   bt_record->setFixedWidth(height);
   bt_record->setIconSize(icon_size);
-
-  // button: chart widget
-  // auto bt_chart_widget = new ToggleButton(
-  //     QIcon(std::getenv("CRDC_WS") + QString("/icons/chart.png")), false,
-  //     [=](bool is_checked) { global_data->chart_widget_->setHidden(!is_checked); });
-  // bt_chart_widget->setToolTip("Chart Widget");
-  // bt_chart_widget->setMaximumHeight(height);
-  // bt_chart_widget->setFixedWidth(height);
-  // bt_chart_widget->setIconSize(icon_size);
 
   // button: renderer manager
   auto bt_renderer_manager = new ToggleButton(
@@ -175,12 +164,12 @@ Toolbar::Toolbar() {
 
   left->addWidget(bt_info);
   left->addWidget(bt_locate);
-  left->addWidget(bt_follow);
-  left->addWidget(bt_image_player);
+  left->addWidget(bt_image_player_add);
+  left->addWidget(bt_image_player_del);
   left->addWidget(global_data->bt_measure_);
+  left->addWidget(data_mining_);
   right->addWidget(bt_screenshot);
   right->addWidget(bt_record);
-  // right->addWidget(bt_chart_widget);
   right->addWidget(bt_renderer_manager);
 }
 

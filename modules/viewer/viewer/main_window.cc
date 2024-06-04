@@ -16,14 +16,17 @@ namespace airi {
 
 MainWindow::MainWindow() {
   // initialize global data
-  auto global_data = Singleton<GlobalData>::get();
+  auto global_data = crdc::airi::common::Singleton<GlobalData>::get();
   global_data->initialize();
 
   // init widgets
   global_data->main_window_ = this;
   global_data->glwidget_ = new GLWidget();
-  global_data->image_player_ = new ImagePlayer();
-  // global_data->chart_widget_ = new ChartWidget();
+  global_data->ip_counter_ = 0;
+  for (int i = 0; i < 6; i++) {
+    global_data->image_players_.push_back(new ImagePlayer());
+  }
+
   global_data->renderer_manager_ = new RendererManager();
   global_data->toolbar_ = new Toolbar();
 
@@ -39,7 +42,6 @@ MainWindow::MainWindow() {
   splitter->setStyleSheet("QSplitter::handle { border: 1px dashed gray }");
   splitter->setChildrenCollapsible(false);
   splitter->addWidget(left_container);
-  // splitter->addWidget(global_data->chart_widget_);
   splitter->addWidget(global_data->renderer_manager_);
   auto layout = new QHBoxLayout();
   layout->addWidget(splitter);

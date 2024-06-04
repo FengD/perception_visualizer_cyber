@@ -15,19 +15,39 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgcodecs/legacy/constants_c.h>
 #include <opencv2/imgproc/types_c.h>
-#include "cyber/common/log.h"
 #include "cyber/sensor_proto/image.pb.h"
+#include "h264_rgb_encoder_decoder/decoder.h"
 
 namespace crdc {
 namespace airi {
 namespace util {
-static inline bool cv_decoder(const crdc::airi::Image2 &proto_image, cv::Mat *image) {
-  std::vector<uint8_t> compressed_buffer(proto_image.data().begin(), proto_image.data().end());
-  *image = cv::imdecode(compressed_buffer, CV_LOAD_IMAGE_UNCHANGED);
 
-  // decoded 3 channel image is in order bgr
-  if (proto_image.type() == std::to_string(crdc::airi::RGB8)) {
-    cv::cvtColor(*image, *image, CV_BGR2RGB);
+crdc::airi::H264DecoderData* decoder_data;
+
+static inline void init_h264_decoder() {
+  if(crdc::airi::decoder_init(&decoder_data) < 0){
+    printf("Fail to init decoder\n");
+  }
+}
+
+static inline void deinit_h264_decoder() {
+  crdc::airi::decoder_parse(decoder_data, NULL, 0);
+  crdc::airi::decoder_flush(decoder_data);
+  crdc::airi::decoder_dispose(decoder_data);
+}
+
+static inline bool cv_decoder(const crdc::airi::Image2 &proto_image, cv::Mat *image) {
+  if (proto_image.compression() == crdc::airi::Image2_Compression_H264) {
+    crdc::airi::decoder_parse(decoder_data, reinterpret_cast<uint8_t*>(const_cast<char*>(proto_image.data().c_str())),
+      proto_image.data().size());
+    *image = cv::Mat(decoder_data->height, decoder_data->width, CV_8UC3, decoder_data->out_buffer).clone();
+  } else {
+    std::vector<uint8_t> compressed_buffer(proto_image.data().begin(), proto_image.data().end());
+    *image = cv::imdecode(compressed_buffer, CV_LOAD_IMAGE_UNCHANGED);
+    // decoded 3 channel image is in order bgr
+    if (proto_image.type() == std::to_string(crdc::airi::RGB8)) {
+      cv::cvtColor(*image, *image, CV_BGR2RGB);
+    }
   }
   return true;
 }
@@ -123,6 +143,12 @@ static bool convert_from_proto(const crdc::airi::Image2 &proto_image, cv::Mat *i
       cv::Mat y(proto_image.height(), proto_image.width(), CV_8UC1, (void*)proto_image.data().data());
       cv::Mat rgb(proto_image.height(), proto_image.width(), CV_8UC3);
       cv::cvtColor(y, rgb, cv::COLOR_GRAY2RGB);
+      *image = rgb.clone();
+    } else if (proto_image.type() == std::string("JPG")) {
+      std::vector<uint8_t> compressed_buffer(proto_image.data().begin(), proto_image.data().end());
+      cv::Mat image_jpeg = cv::imdecode(compressed_buffer, CV_LOAD_IMAGE_UNCHANGED);
+      cv::Mat rgb(proto_image.height(), proto_image.width(), CV_8UC3);
+      cv::cvtColor(image_jpeg, rgb, CV_BGR2RGB);
       *image = rgb.clone();
     } else {
       LOG(ERROR) << "Unexpected image type: " << proto_image.type();

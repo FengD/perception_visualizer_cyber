@@ -1,1 +1,1 @@
-install(PROGRAMS run.sh DESTINATION ./viewer/bin/)
+install(PROGRAMS execute_viewer.sh DESTINATION ./viewer/bin/)

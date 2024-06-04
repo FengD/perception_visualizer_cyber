@@ -1,7 +1,6 @@
 #include "viewer/renderers/texturemap_renderer.h"
 #include <functional>
 #include <thread>
-#include "cyber/common/log.h"
 #include "common/io/file.h"
 #include "viewer/global_data.h"
 #include "viewer/renderer_manager.h"

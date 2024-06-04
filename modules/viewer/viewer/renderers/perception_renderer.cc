@@ -109,6 +109,10 @@ class PerceptionChannel : public Renderer {
     auto cb_height = new CheckBox("height", show_height_,
                                   [&](bool is_checked) { show_height_ = is_checked; });
     item_->addWidget(cb_height);
+
+    auto cb_confidence = new CheckBox("confidence", show_confidence_,
+                                  [&](bool is_checked) { show_confidence_ = is_checked; });
+    item_->addWidget(cb_confidence);
   }
 
  public:
@@ -172,13 +176,37 @@ class PerceptionChannel : public Renderer {
       crdc::airi::viewer::Color color;
       switch (obstacle.type()) {
         case crdc::airi::PerceptionObstacle_Type_VEHICLE:
-          color = global_data_->config_.perception_color_vehicle();
+          if (obstacle.obstacle_sub_type() ==
+            crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_TRUCK_BUS) {
+            color = global_data_->config_.perception_color_bus();
+          } else if (obstacle.obstacle_sub_type() ==
+            crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_TRUCK_TRAILER_HEAD) {
+            color = global_data_->config_.perception_color_truck();
+          } else if (obstacle.obstacle_sub_type() ==
+            crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_TRUCK_TRAILER_CONTAINER) {
+            color = global_data_->config_.perception_color_trailer();
+          } else {
+            color = global_data_->config_.perception_color_vehicle();
+          }
           break;
         case crdc::airi::PerceptionObstacle_Type_BICYCLE:
-          color = global_data_->config_.perception_color_cyclist();
+          if (obstacle.obstacle_sub_type() ==
+              crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_BICYCLE_MOTORBICYCLE) {
+            color = global_data_->config_.perception_color_motor_cycle();
+          } else if (obstacle.obstacle_sub_type() ==
+            crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_BICYCLE_MOTORTRICYCLE) {
+            color = global_data_->config_.perception_color_tricycle();
+          } else {
+            color = global_data_->config_.perception_color_cyclist();
+          }
           break;
         case crdc::airi::PerceptionObstacle_Type_PEDESTRIAN:
-          color = global_data_->config_.perception_color_pedestrian();
+          if (obstacle.obstacle_sub_type() ==
+              crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_PEDESTRIAN_CHILD) {
+            color = global_data_->config_.perception_color_child();
+          } else {
+            color = global_data_->config_.perception_color_pedestrian();
+          }
           break;
         case crdc::airi::PerceptionObstacle_Type_UNKNOWN_MOVABLE:
           color = global_data_->config_.perception_color_unknown_movable();
@@ -241,7 +269,7 @@ class PerceptionChannel : public Renderer {
       // draw shape
       if (show_bbox) {
         drawBoundingBox(Eigen::Vector3f(obstacle.position().x(), obstacle.position().y(),
-                                        obstacle.height() / 2),
+                                        obstacle.position().z()),
                         Eigen::Vector3f(obstacle.length(), obstacle.width(), obstacle.height()),
                         obstacle.theta());
       }
@@ -334,20 +362,17 @@ class PerceptionChannel : public Renderer {
         drawText(Eigen::Vector3f(obstacle.position().x(), obstacle.position().y(),
                                  obstacle.height() + .5f), height_str, 20, true);
       }
+      // track confidence
+      if(show_confidence_) {
+        std::string str = "";
+        static char confidence_str[128];
+        sprintf(confidence_str, "%.2f(%s)", obstacle.confidence(), str.c_str());
+        drawText(Eigen::Vector3f(obstacle.position().x(), obstacle.position().y(),
+                                 obstacle.height() + .5f), confidence_str, 20, true);
+      }
       // track status
       if (show_track_status_) {
-        std::string str;
-        switch (obstacle.track_status()) {
-          case 0:
-            str = "Static";
-            break;
-          case 1:
-            str = "Moving";
-            break;
-          default:
-            str = "Unknown";
-            break;
-        }
+        std::string str = "";
         drawText(Eigen::Vector3f(obstacle.position().x(), obstacle.position().y(),
                                  obstacle.height() + .5f),
                  str, 20, true);
@@ -607,8 +632,14 @@ class PerceptionChannel : public Renderer {
         std::string key;
         if (obstacle.type() == crdc::airi::PerceptionObstacle_Type_VEHICLE) {
           if (obstacle.obstacle_sub_type() ==
-              crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_VEHICLE_XG) {
-            key = "xg";
+            crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_TRUCK_BUS) {
+            key = "bus";
+          } else if (obstacle.obstacle_sub_type() ==
+            crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_TRUCK_TRAILER_HEAD) {
+            key = "truck";
+          } else if (obstacle.obstacle_sub_type() ==
+            crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_TRUCK_TRAILER_CONTAINER) {
+            key = "trailer";
           } else {
             key = "vehicle";
           }
@@ -616,6 +647,9 @@ class PerceptionChannel : public Renderer {
           if (obstacle.obstacle_sub_type() ==
               crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_BICYCLE_MOTORBICYCLE) {
             key = "motor_cycle";
+          } else if (obstacle.obstacle_sub_type() ==
+            crdc::airi::PerceptionObstacle_ObstacleSubType_SUB_TYPE_BICYCLE_MOTORTRICYCLE) {
+            key = "tricycle";
           } else {
             key = "bicycle";
           }
@@ -641,6 +675,8 @@ class PerceptionChannel : public Renderer {
           } else {
             key = "unknown_unmovable";
           }
+        } else {
+          key = "unknown";
         }
 
         const auto &eye_dis = global_data_->camera_->getEyeDistance();
@@ -698,6 +734,7 @@ class PerceptionChannel : public Renderer {
   bool show_t_init2now_{false};
   bool show_t_update2now_{false};
   bool show_height_{false};
+  bool show_confidence_{false};
 };
 
 PerceptionRenderer::PerceptionRenderer() {

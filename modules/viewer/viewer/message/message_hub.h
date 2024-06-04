@@ -1,6 +1,10 @@
 #pragma once
 
+#ifndef WITH_ROS2
 #include <cyber/cyber.h>
+#else
+#include "common/common.h"
+#endif
 #include <list>
 #include <set>
 #include <string>
@@ -10,14 +14,21 @@
 namespace crdc {
 namespace airi {
 
+#ifndef WITH_ROS2
 using apollo::cyber::message::RawMessage;
+#else
+#endif
 
 class MessageHub {
  public:
   MessageHub();
 
  public:
+#ifndef WITH_ROS2
   apollo::cyber::Node *node();
+#else
+  rclcpp::Node *node();
+#endif
 
   template <typename MessageT>
   void subscribe(

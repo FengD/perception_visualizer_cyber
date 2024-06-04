@@ -33,256 +33,14 @@ context_grid_color {
 
 # FrameRenderer
 frame_renderer_enable: true
-frame_line_length: 3
+frame_line_length: 5
 frame_line_width: 2
-frame_font_size: 25
+frame_font_size: 15
 frame_font_bold: true
 frame_renderer_frames: "global"
-# frame_renderer_frames: "local"
-# frame_renderer_frames: "wheel"
-# frame_renderer_frames: "body"
-# frame_renderer_frames: "BASE_LIDAR"
-# frame_renderer_frames: "ROBO_LEFT"
-# frame_renderer_frames: "ROBO_RIGHT"
-# frame_renderer_frames: "ROBO_FRONT"
-# frame_renderer_frames: "ROBO_BACK"
-# frame_renderer_frames: "CAR_HEAD"
-
-
-# HDMapRenderer
-hdmap_renderer_enable: true
-hdmap_road_enable: true
-hdmap_road_color {
-  r: 0.5
-  g: 0.5
-  b: 0.5
-  a: 0.5
-}
-hdmap_lane_center_line_enable: true
-hdmap_lane_center_line_color {
-  r: 0
-  g: 0.5
-  b: 0
-  a: 0.5
-}
-hdmap_lane_divider_enable: true
-hdmap_junction_enable: true
-hdmap_junction_color {
-  r: 0.5
-  g: 0.5
-  b: 0
-  a: 0.5
-}
-hdmap_crosswalk_enable: true
-hdmap_crosswalk_color {
-  r: 1
-  g: 1
-  b: 1
-  a: 0.5
-}
-hdmap_parking_area_enable: true
-hdmap_parking_area_color {
-  r: 0.5
-  g: 0.2
-  b: 0.2
-  a: 0.5
-}
-hdmap_road_block_area_enable: true
-hdmap_road_block_area_color {
-  r: 0.8
-  g: 0.8
-  b: 0.8
-  a: 0.5
-}
-hdmap_slope_area_enable: true
-hdmap_slope_area_color {
-  r: 1
-  g: 0
-  b: 0
-  a: 0.5
-}
-hdmap_side_area_enable: true
-hdmap_side_area_color {
-  r: 0
-  g: 1
-  b: 1
-  a: 0.5
-}
-hdmap_walk_way_enable: true
-hdmap_walk_way_color {
-  r: 0.5
-  g: 1
-  b: 0.5
-  a: 0.5
-}
-hdmap_square_enable: true
-hdmap_square_color {
-  r: 0.3
-  g: 0.5
-  b: 0.5
-  a: 0.5
-}
-hdmap_green_belt_enable: true
-hdmap_green_belt_color {
-  r: 0
-  g: 1
-  b: 0
-  a: 0.5
-}
-hdmap_speed_bump_enable: true
-hdmap_speed_bump_color {
-  r: 0.5
-  g: 0.2
-  b: 0.2
-  a: 0.5
-}
-hdmap_side_line_enable: true
-hdmap_side_line_color {
-  r: 1
-  g: 0
-  b: 0
-  a: 0.5
-}
-hdmap_side_line_width: 0.3
-
-
-# TexturemapRenderer
-texturemap_renderer_enable: false
-texturemaps {
-  name: "occ_map"
-  path: "maps/current/occ.png"
-  offset_x: 694.429
-  offset_y: -1436.773
-  resolution: 0.1
-}
-texturemaps {
-  name: "intensity_map"
-  path: "maps/current/int.png"
-  offset_x: 694.429
-  offset_y: -1436.773
-  resolution: 0.1
-}
-texturemaps {
-  name: "lane_map"
-  path: "maps/current/lan.png"
-  offset_x: 694.429
-  offset_y: -1436.773
-  resolution: 0.1
-}
-texturemaps {
-  name: "radar_map"
-  path: "maps/current/rad.png"
-  offset_x: 622.670
-  offset_y: -1591.567
-  resolution: 0.1
-}
-
-
-# LocalizationRenderer
-localization_renderer_enable: true
-localization_trail_enable: true
-localization_trail_width: 0.3
-localization_trail_color {
-  r: 0.5
-  g: 0
-  b: 0
-  a: 0.8
-}
-localization_trail_capacity: 1000
-
-
-# PredictionRenderer
-prediction_renderer_enable: true
-prediction_path_color {
-  r: 0.5
-  g: 0.8
-  b: 1
-  a: 0.8
-}
-prediction_probability_enable: false
-prediction_intent_enable: false
-prediction_most_probably_enable: false
-
-
-# RoutingRenderer
-routing_request_enable: true
-routing_request_size: 0.25
-routing_request_color {
-  r: 1
-  g: 1
-  b: 1
-  a: 1
-}
-routing_renderer_enable: true
-routing_response_enable: true
-routing_response_width: 0.2
-routing_response_color {
-  r: 0.2
-  g: 0.8
-  b: 0.2
-  a: 0.5
-}
-
-
-# PlanningRenderer
-planning_renderer_enable: true
-planning_reference_line_enable: true
-planning_reference_line_width: 0.5
-planning_reference_line_color {
-  r: 0.2
-  g: 0.8
-  b: 0.2
-  a: 0.5
-}
-planning_path_enable: true
-planning_path_width: 0.5
-planning_path_color {
-  r: 0.2
-  g: 0.2
-  b: 0.8
-  a: 0.5
-}
-planning_stopline_enable: true;
-planning_stopline_width: 3
-planning_stopline_height: 2
-planning_stopline_color {
-  r: 1
-  g: 0
-  b: 0
-  a: 0.8
-}
-planning_trajectory_enable: true
-planning_trajectory_width: 0.85
-planning_trajectory_color {
-  r: 0
-  g: 1
-  b: 1
-  a: 0.8
-}
-
-
-# # PointCloudRenderer
-# pointcloud_renderer_enable: false
-# pointcloud_channel_enable {
-#   key: "ROBO_LEFT"
-#   value: true
-# }
-
-
-# # PointCloudsRenderer
-# pointclouds_renderer_enable: true
-# pointclouds_channel_enable {
-#   key: "ROBO_POINTCLOUDS"
-#   value: true
-# }
-
 
 # PerceptionRenderer
-perception_renderer_enable: true
-perception_channel_enable {
-  key: "/adlab/perception/obstacles"
-  value: true
-}
+perception_renderer_enable: false
 perception_line_width: 3
 perception_color_vehicle {
   r: 1
@@ -326,16 +84,44 @@ perception_color_fence {
   b: 0.5
   a: 1
 }
-
-
-# ModelRenderer
-model_renderer_enable: true
-model_path: "model/viewer/ZenvoST1.3ds"
+perception_color_bus {
+  r: 1
+  g: 0.75
+  b: 0.25
+  a: 1
+}
+perception_color_child {
+  r: 0.5
+  g: 0.75
+  b: 0.5
+  a: 1
+}
+perception_color_motor_cycle {
+  r: 0.75
+  g: 0.5
+  b: 0.25
+  a: 1
+}
+perception_color_trailer {
+  r: 0.75
+  g: 0.75
+  b: 0.5
+  a: 1
+}
+perception_color_truck {
+  r: 1
+  g: 0.25
+  b: 0.75
+  a: 1
+}
+perception_color_tricycle {
+  r: 0.25
+  g: 0.25
+  b: 0.25
+  a: 1
+}
 
 
 # MarkerRenderer
 marker_renderer_enable: false
 
-
-# HudRenderer
-hud_renderer_enable: true

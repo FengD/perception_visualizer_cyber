@@ -16,39 +16,6 @@ namespace crdc {
 namespace airi {
 
 RendererManager::RendererManager() {
-  // // button: fold all
-  // auto bt_fold = new PushButton(QIcon(std::getenv("CRDC_WS") + QString("/icons/fold.png")), [&]() {
-  //   int idx = 0;
-  //   while (true) {
-  //     auto item = vbox_->itemAt(idx++);
-  //     if (!item) {
-  //       break;
-  //     }
-
-  //     ((RendererItem *)item->widget())->setUnfolded(false);
-  //   }
-  // });
-  // bt_fold->setText("Fold All");
-  // bt_fold->setFixedHeight(36);
-  // bt_fold->setIconSize(QSize(28, 28));
-
-  // // button: disable all
-  // auto bt_disable =
-  //     new PushButton(QIcon(std::getenv("CRDC_WS") + QString("/icons/switch-off.png")), [&]() {
-  //       int idx = 0;
-  //       while (true) {
-  //         auto item = vbox_->itemAt(idx++);
-  //         if (!item) {
-  //           break;
-  //         }
-
-  //         ((RendererItem *)item->widget())->setChecked(false);
-  //       }
-  //     });
-  // bt_disable->setText("Disable All");
-  // bt_disable->setFixedHeight(36);
-  // bt_disable->setIconSize(QSize(28, 28));
-
   // button: import config
   auto bt_import = new PushButton(QIcon(std::getenv("CRDC_WS") + QString("/icons/import.png")), [&]() {
     auto path = QFileDialog::getOpenFileName(nullptr, "Import Configuration", "",
@@ -56,8 +23,8 @@ RendererManager::RendererManager() {
     if (!path.isEmpty()) {
      viewer::Config cfg;
       if (crdc::airi::util::get_proto_from_file(path.toStdString(), &cfg)) {
-        Singleton<GlobalData>::get()->config_ = cfg;
-        Singleton<GlobalData>::get()->glwidget_->loadConfigPost();
+        crdc::airi::common::Singleton<GlobalData>::get()->config_ = cfg;
+        crdc::airi::common::Singleton<GlobalData>::get()->glwidget_->loadConfigPost();
       }
     }
   });
@@ -69,7 +36,7 @@ RendererManager::RendererManager() {
   auto bt_export = new PushButton(QIcon(std::getenv("CRDC_WS") + QString("/icons/export.png")), [&]() {
     auto path = QFileDialog::getSaveFileName(nullptr, "Export Configuration", "", "*.*");
     if (!path.isEmpty()) {
-      crdc::airi::util::set_proto_to_ascii_file(Singleton<GlobalData>::get()->config_,
+      crdc::airi::util::set_proto_to_ascii_file(crdc::airi::common::Singleton<GlobalData>::get()->config_,
                                                path.toStdString());
     }
   });

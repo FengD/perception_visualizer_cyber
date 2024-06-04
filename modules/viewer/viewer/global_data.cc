@@ -1,9 +1,7 @@
-// #include "cyber/cyber.h"
 #include "viewer/global_data.h"
 #include <FTGL/ftgl.h>
 #include <gflags/gflags.h>
 #include <random>
-#include "cyber/common/log.h"
 #include "common/io/file.h"
 #include "viewer/message/message_hub.h"
 
@@ -21,8 +19,9 @@ namespace airi {
 void GlobalData::initialize() {
   // load config
   const auto &path_config = crdc::airi::util::get_absolute_path(std::getenv("CRDC_WS"), FLAGS_config);
-  AERROR_IF(!crdc::airi::util::get_proto_from_file(path_config, &config_))
-      << "Failed to load config file: " << path_config;
+    if(!crdc::airi::util::get_proto_from_file(path_config, &config_)) {
+      LOG(ERROR) << "Failed to load config file: " << path_config;
+    }
 
   // load font
   const auto &path_font_normal =
@@ -40,10 +39,6 @@ void GlobalData::initialize() {
     font_bold_.reset();
   }
 
-  // init tf
-  // tf_ = &(tf2::extend::TF::instance());
-  // CHECK(tf_);
-
   // init message hub
   message_hub_.reset(new MessageHub());
 
@@ -58,22 +53,6 @@ void GlobalData::initialize() {
   ori->set_qx(0);
   ori->set_qy(0);
   ori->set_qz(0);
-
-  // subscribe localization messages
-  // message_hub_->subscribe<LocalizationEstimate>(
-  //     FLAGS_localization_topic,
-  //     std::bind(&GlobalData::onLocalization, this, std::placeholders::_1, std::placeholders::_2));
-  // message_hub_->subscribe<LocalizationEstimate>(
-  //     FLAGS_localization_odom_topic,
-  //     std::bind(&GlobalData::onLocalization, this, std::placeholders::_1, std::placeholders::_2));
-  // message_hub_->subscribe<LocalizationEstimate>(
-  //     FLAGS_localization_gpose_topic,
-  //     std::bind(&GlobalData::onLocalization, this, std::placeholders::_1, std::placeholders::_2));
-
-  // if (FLAGS_mock) {
-  //   enable_thread_mock_.store(true);
-  //   handle_thread_mock_.reset(new std::thread(std::bind(&GlobalData::threadMock, this)));
-  // }
 }
 
 std::shared_ptr<crdc::airi::LocalizationEstimate> GlobalData::pose() {
@@ -81,41 +60,7 @@ std::shared_ptr<crdc::airi::LocalizationEstimate> GlobalData::pose() {
   return pose_;
 }
 
-// void GlobalData::onLocalization(const std::string &channel,
-//                                 const std::shared_ptr<LocalizationEstimate> &msg) {
-//   // update pose
-//   if (channel == FLAGS_localization_topic) {
-//     std::lock_guard<std::mutex> lock(mutex_pose_);
-//     pose_ = msg;
-//     return;
-//   }
-
-//   // update tf
-//   geometry_msgs::TransformStamped transform;
-//   if (channel == FLAGS_localization_odom_topic) {
-//     transform.header.frame_id = "local";
-//     transform.child_frame_id = "body";
-//   }
-//   else if(channel == FLAGS_localization_gpose_topic) {
-//     transform.header.frame_id = "global";
-//     transform.child_frame_id = "local";
-//   }
-//   else {
-//     return;
-//   }
-//   transform.header.stamp = uint64_t(msg->header().timestamp_sec() * 1000000);
-//   tf2::Vector3 trans(msg->pose().position().x(), msg->pose().position().y(),
-//                      msg->pose().position().z());
-//   tf2::Quaternion quat(msg->pose().orientation().qx(), msg->pose().orientation().qy(),
-//                        msg->pose().orientation().qz(), msg->pose().orientation().qw());
-//   tf2::transformTF2ToMsg(tf2::Transform(quat, trans), transform.transform);
-//   AERROR_IF(!tf_->setTransform(transform, "viewer"))
-//       << "Failed to set transform from body to global";
-// }
-
 void GlobalData::threadMock() {
-  // auto node = message_hub_->node();
-
   while (enable_thread_mock_.load()) {
     auto image_markers = std::make_shared<ImageMarkerList>();
     image_markers->set_image_channel("CAM_HK_FS0_L");
@@ -132,8 +77,6 @@ void GlobalData::threadMock() {
     auto pp = tt->mutable_pos();
     pp->set_x(100);
     pp->set_y(200);
-    // static auto writer_image_marker = node->CreateWriter<ImageMarkerList>("cao");
-    // writer_image_marker->Write(image_markers);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }

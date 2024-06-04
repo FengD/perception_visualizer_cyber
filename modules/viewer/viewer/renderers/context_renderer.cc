@@ -1,5 +1,4 @@
 #include "viewer/renderers/context_renderer.h"
-#include "cyber/common/log.h"
 #include "viewer/camera.h"
 #include "viewer/global_data.h"
 #include "viewer/renderer_manager.h"

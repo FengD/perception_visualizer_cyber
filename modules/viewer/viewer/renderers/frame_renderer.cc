@@ -34,7 +34,6 @@ void FrameRenderer::render() {
     }
 
     GLPushGuard pg;
-    // transform(frame);
 
     glLineWidth(global_data_->config_.frame_line_width());
     glDisable(GL_BLEND);

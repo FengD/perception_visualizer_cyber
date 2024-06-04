@@ -22,6 +22,7 @@ class ImagePlayer : public QWidget {
 
  public:
   ImagePlayer();
+  ~ImagePlayer();
 
  protected:
   void paintEvent(QPaintEvent *event) override;
@@ -45,8 +46,8 @@ class ImagePlayer : public QWidget {
   std::mutex mutex_marker_;
 
   MousePosition mouse_pos_;
-  bool is_dragging_;
-  QPoint pos_start_;
+  bool is_dragging_ = false;
+  QPoint pos_start_, tl_point_;
   QSize sz_start_;
 };
 

@@ -169,10 +169,6 @@ class PointCloudsChannel : public Renderer {
       LOG(WARNING) << (_msg->clouds_size() <= 0) << " is not met.";
       return;
     }
-    // !!! temp hack to ignore more than 4 lidars
-    while (_msg->clouds_size() > 4) {
-      _msg->mutable_clouds()->erase(_msg->mutable_clouds()->end() - 1);
-    }
 
     // initialize once
     if (!initialized_) {
