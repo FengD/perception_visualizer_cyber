@@ -1,6 +1,6 @@
 ## Description
 
-* It is a very useful perception visualization tools based on on cyber input.
+* It is a very useful perception visualization tools based on CyberRT （as the middleware）.
 * Use the project [apollo_cyber](https://github.com/FengD/apollo_cyber) to install the extra perception and sensor .proto.
 
 ## Dependencies
