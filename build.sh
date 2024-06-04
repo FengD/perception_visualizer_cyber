@@ -72,22 +72,14 @@ function clean() {
     rm -rf build build_dist
 }
 
-function get_dependencies() {
-    echo "get-dependencies"
-    mkdir -p build/modules
-    wget http://10.10.173.10/share/pkgs/get-dependencies.py
-    python get-dependencies.py
-    rm -rf get-dependencies.py
-}
 
 function check_code() {
-    wget http://10.10.173.10/release/code_check_tools/code_check_tools.tar.gz
-    tar -zxvf code_check_tools.tar.gz
+    git clone https://github.com/FengD/code_check_tools.git
     chmod -R +x code_check_tools
     export WORKSPACE=${WS}
-    export CODE_CHECK_EXCLUDE_LIST="can,memory_check,communication,build_dist,build"
+    export CODE_CHECK_EXCLUDE_LIST="build_dist,build"
     ./code_check_tools/code_check.sh run
-    rm -rf code_check_tools.tar.gz code_check_tools
+    rm -rf code_check_tools
 }
 
 function build_make() {
@@ -129,16 +121,7 @@ function main() {
     BUILD_DIST=OFF
     WITH_COV=OFF
     DO_TEST=OFF
-    # get_dependencies
-    if [[ "${PLATFORM}" == "TDA4" ]];then
-        source $(find /opt/ -name environment-setup-aarch64-linux)
-    elif [[ "${PLATFORM}" == "A6" ]];then
-        source /opt/hirain-imx-linux/4.14-sumo/environment-setup-aarch64-poky-linux
-    fi
 
-    if [ "${ARCH}" = "arm64" ]; then
-        EXTRA_OPTIONS="${EXTRA_OPTIONS} -DWITH_AARCH64=ON"
-    fi
     case $cmd in
         build)
             build_make
