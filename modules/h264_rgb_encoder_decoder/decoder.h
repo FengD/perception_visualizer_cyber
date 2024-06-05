@@ -1,4 +1,4 @@
-// Copyright (C) 2023 Hirain Technologies
+// Copyright (C) 2023 FengD
 // License: Modified BSD Software License Agreement
 // Author: 3rdparty
 // Description: h264 decoder
