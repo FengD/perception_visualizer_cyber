@@ -6,14 +6,7 @@
 ## Dependencies
 
 ``` shell
-sudo apt-get install qt5-default
-sudo apt-get install qtbase5-dev
-sudo apt-get install libqt5charts5-dev
-sudo apt install libftgl-dev
-sudo apt install libboost-dev
-sudo apt install libglm-dev
-sudo apt install libavcodec-dev
-sudo apt install libswscale-dev
+sudo apt-get install qt5-default qtbase5-dev libqt5charts5-dev libftgl-dev libboost-dev libglm-dev libavcodec-dev libswscale-dev
 ```
 
 ## Build
@@ -24,7 +17,6 @@ sudo apt install libswscale-dev
 `./build.sh` build the project.
 `./build.sh clean` clean the build.
 run `./build.sh help` to see the details.
-
 
 ## Release
 * If the build successed, all the release are in the `build_dist` folder.
